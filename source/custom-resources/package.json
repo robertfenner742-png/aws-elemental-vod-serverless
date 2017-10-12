@@ -1,22 +1,36 @@
 {
-  "name": "resources",
+  "name": "vod-deployment",
   "version": "1.0.0",
-  "description": "custom cfn resources",
-  "main": "stepfunctions.js",
+  "engines": {
+    "node": "^6.10"
+  },
+  "description": "cfn custom resources for vod workflow",
+  "main": "na",
   "scripts": {
-    "test": "na"
+    "test": "nyc mocha lib/*.spec.js"
+  },
+  "dependencies": {
+    "aws-sdk": "*",
+    "cfn-response": "*",
+    "https": "^1.0.0",
+    "moment": "^2.18.1",
+    "promise-throttle": "^0.3.1",
+    "url": "^0.11.0",
+    "uuid": "*"
+  },
+  "devDependencies": {
+    "aws-sdk-mock": "*",
+    "chai": "*",
+    "mocha": "*",
+    "nyc": "^11.2.1",
+    "sinon": "*",
+    "sinon-chai": "*"
   },
   "repository": {
     "type": "git",
     "url": "na"
   },
-  "keywords": [
-    "na"
-  ],
-  "author": "tomnight",
+  "author": "",
   "license": "Amazon Software License",
-  "dependencies": {
-    "async": "^2.4.0",
-    "cfn-response": "^1.0.1"
-  }
+  "readme": "../../ReadMe.md"
 }

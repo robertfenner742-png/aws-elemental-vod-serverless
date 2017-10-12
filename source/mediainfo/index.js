@@ -13,67 +13,36 @@
 
 /**
  * @author Solution Builders
-**/
+ **/
 'use strict';
 const AWS = require('aws-sdk');
-const s3 = new AWS.S3();
 const MediaInfo = require('./lib/mediaInfoCommand').MediaInfoCommand;
-const dynamodb = new AWS.DynamoDB({
-    region: process.env.AWS_REGION
-});
+const error = require('./lib/error.js');
 
 exports.handler = (event, context, callback) => {
-  console.log('Received event:', JSON.stringify(event, null, 2));
-  let params;
-  let info;
+    console.log('Received event:', JSON.stringify(event, null, 2));
 
-  if (event.preset) {
-      params = {
-          Bucket: process.env.Mp4Dest,
-          Key: event.output,
-          Expires: 300
-      };
-      info = 'mp4Mediainfo';
-  } else {
-      params = {
-          Bucket: event.srcBucket,
-          Key: event.srcVideo,
-          Expires: 300
-      };
-      info = 'srcMediainfo';
-  }
+    const s3 = new AWS.S3();
 
-  console.log('running ' + info, JSON.stringify(params));
+    let params = {
+            Bucket: event.srcBucket,
+            Key: event.srcVideo,
+            Expires: 300
+        };
 
-  let url = s3.getSignedUrl('getObject', params);
-  let mediaInfo = new MediaInfo(url);
+    let url = s3.getSignedUrl('getObject', params);
+    let mediaInfo = new MediaInfo(url);
 
-  mediaInfo.on('error', (err) => {
-    console.log(err, err.stack);
-    callback(err);
-  });
-
-  mediaInfo.once('$runCompleted', (output) => {
-
-    console.log(JSON.stringify(output, null, 2))
-
-    params = {
-      TableName: process.env.DynamoDB,
-      Key: {"guid": {S: event.guid}},
-      ExpressionAttributeValues: {':json': {S: JSON.stringify(output)}},
-      UpdateExpression: 'SET ' + info + ' = :json'
-    };
-
-    dynamodb.updateItem(params, function(err) {
-      if (err) {
-        console.log(err, err.stack);
-        callback(err);
-      }
-      else {
-        console.log('DynamoDB updated with Mediainfo');
-        callback(null, 'Sucess');
-      }
+    mediaInfo.once('$runCompleted', (output) => {
+        console.log(JSON.stringify(output, null, 2));
+        event.srcMediainfo = JSON.stringify(output);
+        callback(null, event);
     });
-  });
-  mediaInfo.run();
+
+    mediaInfo.on('error', (err) => {
+        error.sns(event.guid, err);
+        callback(err);
+    });
+
+    mediaInfo.run();
 };

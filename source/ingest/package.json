@@ -1,0 +1,33 @@
+{
+  "name": "vod-deployment",
+  "version": "1.0.0",
+  "engines": {
+    "node": "^6.10"
+  },
+  "description": "ingest workflow for video on demand",
+  "main": "na",
+  "scripts": {
+    "test": "nyc mocha lib/*.spec.js"
+  },
+  "dependencies": {
+    "aws-sdk": "*",
+    "moment": "^2.18.1",
+    "uuid": "*",
+    "xml2js": "*"
+  },
+  "devDependencies": {
+    "aws-sdk-mock": "*",
+    "chai": "*",
+    "mocha": "*",
+    "nyc": "^11.2.1",
+    "sinon": "*",
+    "sinon-chai": "*"
+  },
+  "repository": {
+    "type": "git",
+    "url": "na"
+  },
+  "author": "",
+  "license": "Amazon Software License",
+  "readme": "../../ReadMe.md"
+}
